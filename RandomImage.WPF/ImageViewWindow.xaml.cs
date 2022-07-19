@@ -1,4 +1,5 @@
-﻿using Reactive.Bindings;
+﻿using MaterialDesignThemes.Wpf;
+using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,8 +28,10 @@ namespace RandomImageViewer.WPF
 
         public ReactiveCommand SkipPreviousCommand { get; }
         public ReactiveCommand PlayCommand { get; }
-        public ReactiveCommand StopCommand { get; }
+        public ReactiveCommand FinishCommand { get; }
         public ReactiveCommand SkipNextCommand { get; }
+
+        public ReactiveProperty<PackIconKind> PlayButtonIcon { get; } = new ReactiveProperty<PackIconKind>();
 
         public ImageViewWindow(
             ImageSelector imageSelector,
@@ -36,6 +39,8 @@ namespace RandomImageViewer.WPF
         {
             InitializeComponent();
             DataContext = this;
+
+            PlayButtonIcon.Value = PackIconKind.Pause;
 
             RemainingTimeInSeconds.Subscribe(remainingTimeInSeconds =>
             {
@@ -67,13 +72,19 @@ namespace RandomImageViewer.WPF
                 {
                     if (!timer.IsEnabled)
                     {
+                        PlayButtonIcon.Value = PackIconKind.Pause;
                         timer.Start();
                     }
+                    else
+                    {
+                        PlayButtonIcon.Value = PackIconKind.Play;
+                        timer.Stop();
+                    }
                 });
-            StopCommand = new ReactiveCommand()
+            FinishCommand = new ReactiveCommand()
                 .WithSubscribe(() =>
                 {
-                    timer.Stop();
+                    Close();
                 });
 
             SkipPreviousCommand.Subscribe(() =>

@@ -75,14 +75,14 @@
                                 Height="36"
                                 VerticalAlignment="Center"
                                 Foreground="White"
-                                Kind="Play" />
+                                Kind="{Binding PlayButtonIcon.Value}" />
                         </Button>
                         <Button
                             x:Name="StopButton"
                             Padding="10,0"
                             Background="Transparent"
                             BorderThickness="0"
-                            Command="{Binding StopCommand}">
+                            Command="{Binding FinishCommand}">
                             <materialDesign:PackIcon
                                 Width="36"
                                 Height="36"

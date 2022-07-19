@@ -10,6 +10,7 @@ namespace RandomImageViewer.WPF
     public sealed class ImageSelector
     {
         private readonly IEnumerable<FileInfo> imagesPath;
+        private int currentIndex = 0;
 
         public ImageSelector(DirectoryInfo imageDirectory)
         {
@@ -26,15 +27,28 @@ namespace RandomImageViewer.WPF
                 }
                 return false;
             });
+
+            Random random = new Random();
+            imagesPath = imagesPath
+                .Select(x => new { Number = random.Next(), Item = x })
+                .OrderBy(x => x.Number)
+                .Select(x => x.Item)
+                .ToList();
         }
 
         public int ImageFilesCount => imagesPath.Count();
 
         public string Next()
         {
-            int index = new Random().Next(ImageFilesCount);
+            currentIndex += 1;
+
+            if (currentIndex >= ImageFilesCount)
+            {
+                currentIndex = 0;
+            }
+
             FileInfo fileInfo = imagesPath
-                .Skip(index)
+                .Skip(currentIndex)
                 .Take(1)
                 .First();
 
@@ -43,9 +57,15 @@ namespace RandomImageViewer.WPF
 
         public string Previous()
         {
-            int index = new Random().Next(ImageFilesCount);
+            currentIndex -= 1;
+
+            if (currentIndex < 0)
+            {
+                currentIndex = ImageFilesCount - 1;
+            }
+
             FileInfo fileInfo = imagesPath
-                .Skip(index)
+                .Skip(currentIndex)
                 .Take(1)
                 .First();
 
